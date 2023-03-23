@@ -11,13 +11,14 @@ class MyClient(discord.Client):
 	async def on_message(self, message: discord.Message):
 		if message.content.startswith('!'):
 			args = message.content.split()
-			match args:
-				case ['!fuse', p1, p2]:
-					id1 = self.id_dict.get(p1)
-					id2 = self.id_dict.get(p2)
+			if args[0] == '!fuse':
+				_, p1, p2 = args
 
-					url = main.get_fusion_url(id1, id2)
-					await message.channel.send(url)
+				id1 = self.id_dict.get(p1)
+				id2 = self.id_dict.get(p2)
+
+				url = main.get_fusion_url(id1, id2)
+				await message.channel.send(url)
 
 
 intents = discord.Intents.default()
