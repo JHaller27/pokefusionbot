@@ -9,7 +9,7 @@ class MyClient(discord.Client):
 	async def on_ready(self):
 		print(f'Logged on as {self.user}')
 		self.id_dict = main.load_pokedict()
-		self.dev_mode = os.getenv('DEVMODE').lower() == 'true'
+		self.dev_mode = os.getenv('DEVMODE', 'false').lower() == 'true'
 		print('Ready')
 
 	async def on_message(self, message: discord.Message):
