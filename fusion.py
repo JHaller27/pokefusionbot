@@ -3,16 +3,30 @@ import typer
 import random
 import yaml
 from functools import cache
+from typing import Optional
 
 
-def load_pokedict() -> dict[str, int]:
+class PokeDict:
+	def __init__(self, id_dict: dict[str, int], fix_dict: dict[str, str]) -> None:
+		self.id_dict: dict[str, int] = id_dict
+		self.fix_dict: dict[str, str] = fix_dict
+
+	@cache
+	def get(self, key: str) -> Optional[int]:
+		key = self.fix_dict.get(key, key)
+		pokeid = self.id_dict.get(key)
+		return pokeid
+
+	@cache
+	def list_normal_names(self) -> list[str]:
+		return list(self.id_dict.keys())
+
+
+def load_pokedict() -> PokeDict:
 	with open('data.yml') as fp:
 		data = yaml.safe_load(fp)
-	pokedict = data['idMap']
-	for fix_name in data['nameFixMap']:
-		pokedict[fix_name] = pokedict[data['nameFixMap'][fix_name]]
 
-	return pokedict
+	return PokeDict(data['idMap'], data['nameFixMap'])
 
 
 @cache
