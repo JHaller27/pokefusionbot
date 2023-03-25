@@ -2,12 +2,15 @@ import discord
 import main
 import os
 
+from typing import Optional
+
 
 class MyClient(discord.Client):
 	async def on_ready(self):
 		print(f'Logged on as {self.user}')
 		self.id_dict = main.load_pokedict()
 		self.dev_mode = os.getenv('DEVMODE').lower() == 'true'
+		print('Ready')
 
 	async def on_message(self, message: discord.Message):
 		if message.content.startswith('!'):
@@ -15,20 +18,24 @@ class MyClient(discord.Client):
 			if args[0] == '!fuse':
 				_, p1, p2 = args
 
-				id1 = self.id_dict.get(p1)
-				id2 = self.id_dict.get(p2)
+				id1 = self.id_dict.get(p1.lower())
+				id2 = self.id_dict.get(p2.lower())
+
+				print(f'{id1=} {id2=}')
 
 				url = main.get_fusion_url(id1, id2)
-				await self.respond_to(message, url)
+				await self.embed_img(message, url, f'{p1}/{p2}')
 
-	async def respond_to(self, message: discord.Message, reply: str):
-		reply = f'{message.author.mention}\n{reply}'
+	async def embed_img(self, message: discord.Message, url: str, description: Optional[str] = None):
+		embed = discord.Embed(description=description)
+		embed.set_image(url=url)
+
+		msg = message.author.mention
 
 		if self.dev_mode:
-			await message.channel.send(f'DEVMODE\n{reply}')
-			return
+			msg = f'DEVMODE\n{msg}'
 
-		await message.channel.send(reply)
+		await message.channel.send(msg, embed=embed)
 
 
 intents = discord.Intents.default()
