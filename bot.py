@@ -22,6 +22,8 @@ class MyClient(discord.Client):
 				await self.respond_to(message, url)
 
 	async def respond_to(self, message: discord.Message, reply: str):
+		reply = f'{message.author.mention}\n{reply}'
+
 		if self.dev_mode:
 			await message.channel.send(f'DEVMODE\n{reply}')
 			return
